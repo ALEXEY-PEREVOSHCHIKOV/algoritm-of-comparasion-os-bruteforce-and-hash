@@ -1,0 +1,71 @@
+fs = require('fs');
+var DemandedName = process.argv[2];
+var secondstroka = process.argv[3];
+
+try {
+    fs.statSync(DemandedName);
+} 
+catch (err) {
+    if (err.code === 'ENOENT') {
+        console.log('this file doesn^t exists')
+        process.exit();
+    }
+}
+
+var inputText = fs.readFileSync(DemandedName);
+inputText = inputText.toString();
+function isMatched(substring, secondstroka){
+    for(var i = 0; i < secondstroka.length;i++){
+        if(secondstroka[i] != substring[i])
+            return false;
+    }
+    return true;
+}
+
+
+
+function BruteForce(secondstroka, text) {
+    var indexAY = new Array();
+    var LengthofStroka = secondstroka.length;
+    var textLength = text.length;
+    for (var i = 0; i <= textLength - LengthofStroka; i++) {
+        var flag = false;
+        if (isMatched(text.substring(i,i+LengthofStroka), secondstroka))
+        indexAY.push(i + 1);
+    }
+    return indexAY;
+}
+
+function Hash(secondstroka, text) {
+    var indexAY = new Array();
+    var LengthofStroka = secondstroka.length;
+    var textLength = text.length;
+    var BringnHash = 0;
+    var substringHash = 0;
+    for (var i = 0; i < LengthofStroka; i++) {
+        BringnHash += secondstroka.charCodeAt(i);
+        substringHash += text.charCodeAt(i);
+    }
+    for (var i = 0; i <= textLength - LengthofStroka; i++) {
+        if(BringnHash==substringHash)
+            if(isMatched(text.substring(i,i+LengthofStroka),secondstroka))
+            indexAY.push(i+1);
+        substringHash -= text.charCodeAt(i);
+        substringHash += text.charCodeAt(i+LengthofStroka);
+    }
+    return indexAY;
+}
+
+
+function calculTime(Introducedfunction, arg1, arg2, countOfIteration){
+    var start = (new Date()).getTime();
+    for(var i = 0; i<countOfIteration;i++) {
+        Introducedfunction(arg1,arg2);
+    }
+    var end = (new Date()).getTime();
+    return (end-start)/countOfIteration;
+}
+
+
+console.log(calculTime(BruteForce,secondstroka,inputText,1000));
+console.log(calculTime(Hash,secondstroka,inputText,1000));
