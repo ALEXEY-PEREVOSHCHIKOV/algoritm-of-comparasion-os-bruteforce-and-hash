@@ -1,0 +1,1 @@
+# algoritm-of-comparasion-os-bruteforce-and-hash
